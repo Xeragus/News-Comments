@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Comment;
+use App\News;
 use Illuminate\Http\Request;
 
 class CommentsController extends Controller
@@ -21,9 +23,11 @@ class CommentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($newsId)
     {
-        //
+        return view('comments.create', [
+            'news' => News::where('id', $newsId)->first()
+        ]);
     }
 
     /**
@@ -32,9 +36,32 @@ class CommentsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $newsId)
     {
-        //
+        $error = false;
+        $messages = [];
+
+        try {
+            $news = News::where('id', $newsId)->first();
+
+            $comment = new Comment();
+
+            $comment->username = $request['username'];
+            $comment->comment_text = $request['comment'];
+
+            $news->addComment($comment);
+
+            $messages[] = "Comment successfully created";
+        } catch (\Exception $e) {
+            $error = true;
+            $messages[] = $e->getMessage();
+        }
+
+        return response()->json([
+            'error' => $error,
+            'messages' => $messages
+        ]);
+
     }
 
     /**
@@ -54,7 +81,7 @@ class CommentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($newsId, $id)
     {
         //
     }

@@ -13,4 +13,4 @@
 
 Route::resource('news', 'NewsController');
 
-Route::resource('comments', 'CommentsController');
+Route::resource('news.comments', 'CommentsController');
